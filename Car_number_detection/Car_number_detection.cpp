@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
     GpuMat gpu_img;
     gpu_img.upload(car_img);
 
-    // Convert GBR image to grayscale
+    // Convert BGR image to grayscale
     GpuMat gpu_gray;
     cuda::cvtColor(gpu_img, gpu_gray, COLOR_BGR2GRAY);
 
