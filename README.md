@@ -9,4 +9,4 @@ The task was to detect car number plate. The solution could be implemented to wa
 
  Lastly, by finding contours , detect number plate
  
- ![alt text](https://github.com/NuneTadevosyan/Car_number_detection/blob/master/imgs/Car1).png?raw=true)
+ ![alt text](https://github.com/NuneTadevosyan/Car_number_detection/blob/master/Detected_imgs/Car1.png?raw=true)
