@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
     GpuMat gpu_img;
     gpu_img.upload(car_img);
 
-    // Convert RGB image to grayscale
+    // Convert GBR image to grayscale
     GpuMat gpu_gray;
     cuda::cvtColor(gpu_img, gpu_gray, COLOR_BGR2GRAY);
 
@@ -36,11 +36,12 @@ int main(int argc, char* argv[])
     GpuMat gpu_edged;
     auto canny_detector = cuda::createCannyEdgeDetector(50, 250);
     canny_detector->detect(gpu_blurred_gray, gpu_edged);
-    //cv::Mat edgedImage(edgedImage_gpu);
+ 
+    // Also apply Gaussian Filter to close open countours
     auto gaussianFilter = cuda::createGaussianFilter(CV_8UC1, CV_8UC1, { 3,3 }, 0);
     gaussianFilter->apply(gpu_edged, gpu_edged);
 
-    // Copy the edged image from GPU to CPU
+    // Copy the edged image from GPU to CPU as findcountours is implemented for CPU
     Mat edged;
     gpu_edged.download(edged);
 
@@ -48,12 +49,12 @@ int main(int argc, char* argv[])
     vector<vector<Point>> contours;
     findContours(edged, contours, RETR_TREE, CHAIN_APPROX_SIMPLE);
 
-    //// Sort the contours by area in descending order
+    //// Sort the contours by area in descending order, we assume that our number plate will be big enough
     sort(contours.begin(), contours.end(), [](const vector<Point>& a, const vector<Point>& b) {
         return contourArea(a) > contourArea(b);
         });
 
-    //// Find the contour with 4 points, which is the screen
+    //// Find the contour with 4 points, which is the screen (number plate is always rectangle)
     vector<Point> screenCnt;
     for (auto& c : contours) {
         double peri = arcLength(c, true);
